@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "C:\Users\Raeez Kuhn\Documents\SAAccessArchive\main.py", line 258, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\Raeez Kuhn\Documents\SAAccessArchive\main.py", line 253, in main
+    MainWindow()
+    ~~~~~~~~~~^^
+  File "C:\Users\Raeez Kuhn\Documents\SAAccessArchive\main.py", line 30, in __init__
+    self.build_menu_bar()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Raeez Kuhn\Documents\SAAccessArchive\main.py", line 56, in build_menu_bar
+    nav_menu.Append(wx.ID_END, "End\tEnd",
+                    ^^^^^^^^^
+AttributeError: module 'wx' has no attribute 'ID_END'
