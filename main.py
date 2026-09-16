@@ -73,6 +73,17 @@ class MainWindow(wx.Frame):
         self.load_local_folder(self.current_folder)
         self.play_sound(SOUND_LAUNCH)
 
+        # Show the welcome screen on first run only.
+        if settings.get(self.config, "first_run_complete") != "yes":
+            self.show_welcome()
+
+    def show_welcome(self):
+        dialog = WelcomeDialog(self)
+        dialog.ShowModal()
+        dialog.Destroy()
+        settings.set_value(self.config, "first_run_complete", "yes")
+        self.item_list.SetFocus()
+
     def play_sound(self, tone):
         if settings.get(self.config, "sounds_enabled") != "yes":
             return
@@ -116,6 +127,7 @@ class MainWindow(wx.Frame):
         settings_menu.Append(5002, "Set Download Folder")
         settings_menu.Append(5003, "Set Local Start Folder")
         settings_menu.Append(5005, "Toggle Sounds")
+        settings_menu.Append(5010, "Show Welcome Screen Again")
         settings_menu.Append(5004, "Reset All Settings")
         menu_bar.Append(settings_menu, "Settings")
 
@@ -144,6 +156,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_set_download_folder, id=5002)
         self.Bind(wx.EVT_MENU, self.on_set_start_folder, id=5003)
         self.Bind(wx.EVT_MENU, self.on_toggle_sounds, id=5005)
+        self.Bind(wx.EVT_MENU, self.on_show_welcome_again, id=5010)
         self.Bind(wx.EVT_MENU, self.on_reset_settings, id=5004)
         self.Bind(wx.EVT_MENU, self.on_help, id=6001)
         self.Bind(wx.EVT_MENU, self.on_about, id=7001)
@@ -316,11 +329,7 @@ class MainWindow(wx.Frame):
             self.open_selected()
         elif key == ord("I") or key == ord("i"):
             self.on_show_info(None)
-        elif key == ord("F") or key == ord("f"):
-            # Multi-letter navigation (handled below in jump_to_letter)
-            event.Skip()
         else:
-            # Multi-letter navigation: any letter or digit
             char = event.GetUnicodeKey()
             if char != wx.WXK_NONE and chr(char).isalnum():
                 self.jump_to_letter(chr(char))
@@ -329,7 +338,6 @@ class MainWindow(wx.Frame):
                 event.Skip()
 
     def jump_to_letter(self, letter):
-        """Jump to the next item whose name starts with the given letter."""
         count = self.item_list.GetItemCount()
         if count == 0:
             return
@@ -811,6 +819,10 @@ class MainWindow(wx.Frame):
                 wx.OK | wx.ICON_INFORMATION, self
             )
 
+    def on_show_welcome_again(self, event):
+        settings.set_value(self.config, "first_run_complete", "no")
+        self.show_welcome()
+
     def on_reset_settings(self, event):
         answer = wx.MessageBox(
             "Reset all settings to their defaults?",
@@ -869,7 +881,7 @@ class MainWindow(wx.Frame):
     def on_about(self, event):
         wx.MessageBox(
             "SA Access Archive\n"
-            "Version 0.9\n\n"
+            "Version 1.2\n\n"
             "Developed by Raeez Kuhn, Eezo the Blind DJ\n"
             "Based in South Africa\n\n"
             "A South African accessible archive for blind and\n"
@@ -878,6 +890,58 @@ class MainWindow(wx.Frame):
             wx.OK | wx.ICON_INFORMATION,
             self
         )
+
+
+class WelcomeDialog(wx.Dialog):
+    """The first-run welcome message."""
+
+    def __init__(self, parent):
+        super().__init__(
+            parent,
+            title="Welcome to SA Access Archive",
+            size=(700, 500)
+        )
+
+        panel = wx.Panel(self)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+
+        welcome_text = (
+            "Welcome to SA Access Archive\n"
+            "Version 1.2\n\n"
+            "An accessible archive client for blind and visually\n"
+            "impaired users in South Africa.\n\n"
+            "Developed by Raeez Kuhn, also known as Eezo the\n"
+            "Blind DJ.\n\n"
+            "What you can do here:\n\n"
+            "1. Browse folders on your own computer. Use the Up and\n"
+            "Down arrows to move through the list, Enter to open a\n"
+            "folder, and Backspace to go up a level.\n\n"
+            "2. Connect to a remote archive over the internet. Press\n"
+            "Alt+S to open the Settings menu, choose Server\n"
+            "Settings, enter your server address and login, then\n"
+            "choose Connect to Server.\n\n"
+            "3. Search the current folder with Ctrl+F.\n\n"
+            "4. Press F1 at any time for the full list of keyboard\n"
+            "shortcuts.\n\n"
+            "If you are unsure where to start, try browsing your\n"
+            "own Documents folder first. Then, when you have a\n"
+            "server ready, connect to it.\n\n"
+            "Thank you for using SA Access Archive."
+        )
+
+        label = wx.StaticText(panel, label=welcome_text)
+        sizer.Add(label, 1, wx.ALL | wx.EXPAND, 20)
+
+        button_sizer = wx.StdDialogButtonSizer()
+        ok_button = wx.Button(panel, wx.ID_OK, "Begin")
+        button_sizer.AddButton(ok_button)
+        button_sizer.Realize()
+
+        sizer.Add(button_sizer, 0, wx.ALL | wx.ALIGN_CENTER, 15)
+
+        panel.SetSizer(sizer)
+
+        ok_button.SetFocus()
 
 
 class SearchDialog(wx.Dialog):

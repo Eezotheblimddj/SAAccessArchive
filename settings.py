@@ -13,6 +13,7 @@ DEFAULTS = {
     "server_address": "",
     "server_username": "",
     "server_password": "",
+    "first_run_complete": "no",
 }
 
 
