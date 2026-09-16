@@ -73,6 +73,7 @@ class MainWindow(wx.Frame):
         self.load_local_folder(self.current_folder)
         self.play_sound(SOUND_LAUNCH)
 
+        # Show the welcome screen on first run only.
         if settings.get(self.config, "first_run_complete") != "yes":
             self.show_welcome()
 
@@ -131,8 +132,7 @@ class MainWindow(wx.Frame):
         menu_bar.Append(settings_menu, "Settings")
 
         help_menu = wx.Menu()
-        help_menu.Append(6001, "Help\tF1")
-        help_menu.Append(6002, "Keyboard Shortcuts")
+        help_menu.Append(6001, "Keyboard Shortcuts\tF1")
         menu_bar.Append(help_menu, "Help")
 
         about_menu = wx.Menu()
@@ -159,7 +159,6 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.on_show_welcome_again, id=5010)
         self.Bind(wx.EVT_MENU, self.on_reset_settings, id=5004)
         self.Bind(wx.EVT_MENU, self.on_help, id=6001)
-        self.Bind(wx.EVT_MENU, self.on_keyboard_shortcuts, id=6002)
         self.Bind(wx.EVT_MENU, self.on_about, id=7001)
 
     def build_body(self):
@@ -853,12 +852,7 @@ class MainWindow(wx.Frame):
         )
 
     def on_help(self, event):
-        dialog = HelpDialog(self)
-        dialog.ShowModal()
-        dialog.Destroy()
-
-    def on_keyboard_shortcuts(self, event):
-        shortcuts = (
+        wx.MessageBox(
             "Keyboard shortcuts:\n\n"
             "Up and Down - move through the list\n"
             "Enter - open a folder, or download a remote file\n"
@@ -878,10 +872,8 @@ class MainWindow(wx.Frame):
             "Alt+N - Navigate\n"
             "Alt+S - Settings\n"
             "Alt+H - Help\n"
-            "Alt+A - About"
-        )
-        wx.MessageBox(
-            shortcuts, "Keyboard Shortcuts",
+            "Alt+A - About",
+            "Keyboard Shortcuts",
             wx.OK | wx.ICON_INFORMATION,
             self
         )
@@ -889,7 +881,7 @@ class MainWindow(wx.Frame):
     def on_about(self, event):
         wx.MessageBox(
             "SA Access Archive\n"
-            "Version 1.3\n\n"
+            "Version 1.2\n\n"
             "Developed by Raeez Kuhn, Eezo the Blind DJ\n"
             "Based in South Africa\n\n"
             "A South African accessible archive for blind and\n"
@@ -915,7 +907,7 @@ class WelcomeDialog(wx.Dialog):
 
         welcome_text = (
             "Welcome to SA Access Archive\n"
-            "Version 1.3\n\n"
+            "Version 1.2\n\n"
             "An accessible archive client for blind and visually\n"
             "impaired users in South Africa.\n\n"
             "Developed by Raeez Kuhn, also known as Eezo the\n"
@@ -929,7 +921,8 @@ class WelcomeDialog(wx.Dialog):
             "Settings, enter your server address and login, then\n"
             "choose Connect to Server.\n\n"
             "3. Search the current folder with Ctrl+F.\n\n"
-            "4. Press F1 at any time for the full in-app guide.\n\n"
+            "4. Press F1 at any time for the full list of keyboard\n"
+            "shortcuts.\n\n"
             "If you are unsure where to start, try browsing your\n"
             "own Documents folder first. Then, when you have a\n"
             "server ready, connect to it.\n\n"
@@ -949,159 +942,6 @@ class WelcomeDialog(wx.Dialog):
         panel.SetSizer(sizer)
 
         ok_button.SetFocus()
-
-
-class HelpDialog(wx.Dialog):
-    """The in-app guide shown when the user presses F1."""
-
-    def __init__(self, parent):
-        super().__init__(
-            parent,
-            title="SA Access Archive - Help",
-            size=(800, 700)
-        )
-
-        panel = wx.Panel(self)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-
-        guide_text = (
-            "SA Access Archive - Help\n"
-            "\n"
-            "About this application\n"
-            "\n"
-            "SA Access Archive is a Windows application for browsing\n"
-            "and downloading files from accessible archives over the\n"
-            "internet, and for browsing folders on your own computer.\n"
-            "It is designed for blind and visually impaired users and\n"
-            "works with screen readers such as NVDA, JAWS, and\n"
-            "Narrator.\n"
-            "\n"
-            "Two modes\n"
-            "\n"
-            "The app has two modes: Local and Remote.\n"
-            "\n"
-            "Local mode shows the contents of a folder on your own\n"
-            "computer. This is the mode you see when the app first\n"
-            "opens.\n"
-            "\n"
-            "Remote mode shows the contents of an archive on a server\n"
-            "somewhere on the internet. To use it, you first set the\n"
-            "server address in Settings, then choose Connect to\n"
-            "Server.\n"
-            "\n"
-            "The status line at the top of the window tells you which\n"
-            "mode you are in. It says 'Local:' for local mode, and\n"
-            "'Remote:' for remote mode.\n"
-            "\n"
-            "Moving around\n"
-            "\n"
-            "Use the Up and Down arrow keys to move through the list\n"
-            "of items. Press Enter to open a folder. Press Backspace\n"
-            "to go up one level. Press Home to jump to the first item\n"
-            "and End to jump to the last item.\n"
-            "\n"
-            "To jump quickly to an item, press the first letter of\n"
-            "its name. Press the same letter again to jump to the\n"
-            "next item starting with that letter.\n"
-            "\n"
-            "Connecting to a remote archive\n"
-            "\n"
-            "1. Press Alt+S to open the Settings menu.\n"
-            "2. Choose Server Settings.\n"
-            "3. Enter the server address, username, and password.\n"
-            "4. Choose Save.\n"
-            "5. Press Alt+S again and choose Connect to Server.\n"
-            "\n"
-            "If the connection succeeds, the list is replaced with\n"
-            "the contents of the remote archive, and the status line\n"
-            "changes to 'Remote:'.\n"
-            "\n"
-            "If the connection fails, an error message appears and\n"
-            "you stay in local mode. The error message tells you why\n"
-            "the connection failed. Common causes are a wrong\n"
-            "address, a wrong username or password, or no internet\n"
-            "connection.\n"
-            "\n"
-            "Downloading files\n"
-            "\n"
-            "When you are in remote mode and you press Enter on a\n"
-            "file, it downloads to your download folder. You can\n"
-            "also press Ctrl+D on the selected file. The status line\n"
-            "shows progress, and when the download finishes, a tone\n"
-            "plays and a message box tells you where the file was\n"
-            "saved.\n"
-            "\n"
-            "To open your download folder in Windows Explorer, press\n"
-            "Alt+F and choose Open Download Folder.\n"
-            "\n"
-            "Searching\n"
-            "\n"
-            "Press Ctrl+F to open the search dialog. Type a term and\n"
-            "press Enter. The list is replaced with items whose names\n"
-            "contain that term. Press Backspace or Escape to clear\n"
-            "the search and return to the full folder.\n"
-            "\n"
-            "Show info about a file\n"
-            "\n"
-            "Press I on any item to see its details: full path,\n"
-            "size, dates, extension, and whether it is read only. In\n"
-            "remote mode, the info also tells you where the file\n"
-            "will be saved when downloaded.\n"
-            "\n"
-            "Sounds\n"
-            "\n"
-            "The app plays short tones to confirm actions. A high\n"
-            "tone when the app starts. A soft click when a folder\n"
-            "opens. A rising tone when a download finishes. A low\n"
-            "tone when something fails.\n"
-            "\n"
-            "To turn sounds on or off, press Alt+S and choose Toggle\n"
-            "Sounds.\n"
-            "\n"
-            "Settings\n"
-            "\n"
-            "Press Alt+S to open the Settings menu. From there you\n"
-            "can:\n"
-            "\n"
-            "- Set the server address, username, and password\n"
-            "- Set the download folder\n"
-            "- Set which folder opens on startup in local mode\n"
-            "- Turn sounds on or off\n"
-            "- Show the welcome screen again\n"
-            "- Reset all settings to their defaults\n"
-            "\n"
-            "For the full list of keyboard shortcuts, press Alt+H\n"
-            "and choose Keyboard Shortcuts.\n"
-            "\n"
-            "Getting help\n"
-            "\n"
-            "Press F1 at any time to bring up this guide.\n"
-            "\n"
-            "For questions, bug reports, or feature requests,\n"
-            "contact the developer using the details in the About\n"
-            "screen. Press Alt+A to open it."
-        )
-
-        self.text_field = wx.TextCtrl(
-            panel,
-            value=guide_text,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
-        )
-        self.text_field.SetInsertionPoint(0)
-
-        sizer.Add(self.text_field, 1, wx.ALL | wx.EXPAND, 10)
-
-        button_sizer = wx.StdDialogButtonSizer()
-        close_button = wx.Button(panel, wx.ID_OK, "Close")
-        button_sizer.AddButton(close_button)
-        button_sizer.Realize()
-
-        sizer.Add(button_sizer, 0, wx.ALL | wx.ALIGN_CENTER, 10)
-
-        panel.SetSizer(sizer)
-
-        self.text_field.SetFocus()
-        self.text_field.SetInsertionPoint(0)
 
 
 class SearchDialog(wx.Dialog):
