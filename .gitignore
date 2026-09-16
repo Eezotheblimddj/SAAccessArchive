@@ -1,4 +1,18 @@
-# Byte-compiled / optimized / DLL files
+# Personal settings
+settings.ini
+
+# Debug files
+err.txt
+errorlog.txt
+
+# Working backups
+*_working.py
+*_working.md
+
+# Build outputs
+build/
+dist/
+__pycache__/# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
